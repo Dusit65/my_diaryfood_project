@@ -73,4 +73,18 @@ class CallAPI {
       throw Exception('Failed to call API');
     }
   }
+  //Method call insert_diaryfood_api.php (add new)-----------------------------------------------
+  static Future<Diaryfood> callInsertDiaryFoodAPI(Diaryfood diaryfood) async {
+    //call to use API and then store the values received from the API in variables.
+    final responseData = await http.post(
+      Uri.parse(Env.hostName + '/mydiaryfood/apis/insert_diaryfood_api.php'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(diaryfood.toJson()),
+    );
+    if (responseData.statusCode == 200) {
+      return Diaryfood.fromJson(jsonDecode(responseData.body));
+    } else {
+      throw Exception('Failed to call API');
+    }
+  }
 }

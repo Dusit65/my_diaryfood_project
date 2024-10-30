@@ -1,10 +1,11 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, must_be_immutable, unused_local_variable, must_call_super, annotate_overrides
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, must_be_immutable, unused_local_variable, must_call_super, annotate_overrides, sort_child_properties_last
 //test
 import 'package:flutter/material.dart';
 import 'package:my_diaryfood_project/models/diaryfood.dart';
 import 'package:my_diaryfood_project/models/member.dart';
 import 'package:my_diaryfood_project/services/call_api.dart';
 import 'package:my_diaryfood_project/utils/env.dart';
+import 'package:my_diaryfood_project/views/insert_diaryfood_ui.dart';
 import 'package:my_diaryfood_project/views/update_profile_ui.dart';
 
 class HomeUI extends StatefulWidget {
@@ -126,7 +127,7 @@ class _HomeUIState extends State<HomeUI> {
                                 tileColor: index % 2 == 0 ? Colors.red[50] : Colors.green[50],
                                 leading: ClipRRect(
                                   child: Image.network(
-                                    '${Env.hostName}/mydiaryfood/assets/images/picupload/foods/${snapshot.data![index].foodImage}',
+                                    '${Env.hostName}/mydiaryfood/pickupload/food/${snapshot.data![index].foodImage}',
                                     width: 50,
                                     height: 50,
                                     fit: BoxFit.cover,
@@ -161,6 +162,39 @@ class _HomeUIState extends State<HomeUI> {
           
         ],
       )),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => InsertDiaryfoodUI(),
+            ),
+          );
+        },
+        // child: Icon(
+        //   Icons.add,
+        //   color: Colors.white,
+        // ),
+        // child: Text(
+        //   'เพิ่มการกิน',
+        //   textAlign: TextAlign.center,
+        // ),
+        label: Text(
+          'เพิ่มการกิน',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+        icon: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+        backgroundColor: Colors.green[800],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(100),),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
