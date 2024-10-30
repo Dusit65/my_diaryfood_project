@@ -639,9 +639,10 @@ class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.02,
               ),
+//save button
               ElevatedButton(
                 onPressed: () {
-                 
+                
                 },
                 child: Text(
                   'บันทึกการกิน',
@@ -658,6 +659,7 @@ class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.02,
               ),
+//cancel button              
               ElevatedButton(
                 onPressed: () {},
                 child: Text(
