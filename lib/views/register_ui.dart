@@ -404,7 +404,7 @@ class _RegisterUIState extends State<RegisterUI> {
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.02,
           ),
-//Login button
+//register button
           Padding(
             padding: EdgeInsets.only(
               left: MediaQuery.of(context).size.width * 0.1,
