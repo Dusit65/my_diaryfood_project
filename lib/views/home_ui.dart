@@ -191,7 +191,20 @@ class _HomeUIState extends State<HomeUI> {
                           });
                     }
                   } else {
-                    return CircularProgressIndicator();
+                    return Column(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.1,
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.1,
+                          width: MediaQuery.of(context).size.width * 0.22,
+                          child: CircularProgressIndicator(
+                            color: Colors.green[800],
+                          ),
+                        ),
+                      ]
+                    );
                   }
                 }),
           ),
