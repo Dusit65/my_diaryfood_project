@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_element, unused_local_variable, no_leading_underscores_for_local_identifiers, unused_field, use_build_context_synchronously, unnecessary_import, prefer_final_fields, sort_child_properties_last, unrelated_type_equality_checks, unnecessary_null_comparison, prefer_is_empty, prefer_interpolation_to_compose_strings, must_be_immutable
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_element, unused_local_variable, no_leading_underscores_for_local_identifiers, unused_field, use_build_context_synchronously, unnecessary_import, prefer_final_fields, sort_child_properties_last, unrelated_type_equality_checks, unnecessary_null_comparison, prefer_is_empty, prefer_interpolation_to_compose_strings, must_be_immutable, annotate_overrides
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -23,6 +23,8 @@ class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
   TextEditingController foodShopnameCtrl = TextEditingController();
   TextEditingController foodPayCtrl = TextEditingController();
   TextEditingController foodDateCtrl = TextEditingController();
+
+//Variable store camera/gallery
   File? _imageSelected;
 
 //Variable store camera/gallery convert to Base64 for sent to api
@@ -319,6 +321,14 @@ class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
 //-------------------------------------------------------------------
 
 //======================================================================================================
+
+  @override
+  void initState() {
+    _getCurrentLocation();
+    
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -727,28 +737,27 @@ class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
                     //ส่งข้อมูลที่ผู้ใช้ป้อน/เลือกไปให้ API เพื่อบันทึกการกินลงฐานข้อมูล
                     //แพ็กข้อมูลที่จะส่งรวมกัน
                     Diaryfood diaryfood = Diaryfood(
-                        foodShopname: foodShopnameCtrl.text.trim(),
-                        foodMeal: meal.toString(),
-                        foodImage: _image64Selected,
-                        foodPay: foodPayCtrl.text.trim(),
-                        foodDate: foodDateCtrl.text.trim(),
-                        foodProvince: _foodProvinceSelected,
-                        foodLat: _foodLat,
-                        foodLng: _foodLng,
-                        memId: widget.memId,
-                      );
+                      foodShopname: foodShopnameCtrl.text.trim(),
+                      foodMeal: meal.toString(),
+                      foodImage: _image64Selected,
+                      foodPay: foodPayCtrl.text.trim(),
+                      foodDate: foodDateCtrl.text.trim(),
+                      foodProvince: _foodProvinceSelected,
+                      foodLat: _foodLat,
+                      foodLng: _foodLng,
+                      memId: widget.memId,
+                    );
                     //ส่งข้อมูลที่แพ็กไว้ไปให้ API เพื่อบันทึกการกินลงฐานข้อมูล
                     //call api
                     CallAPI.callInsertDiaryFoodAPI(diaryfood).then((value) {
                       //ถ้าส่งข้อมูลสําเร็จ
-                      if (value != null) {
+                      if (value.message == '1') {
                         showCompleteDialog(context, 'บันทึกการกินสําเร็จOvO');
-                      }else{
-                        showWaringDialog(context, 'บันทึกการกินไม่สําเร็จ โปรดลองใหม่อีกครั้งTwT');
+                      } else {
+                        showWaringDialog(context,
+                            'บันทึกการกินไม่สําเร็จ โปรดลองใหม่อีกครั้งTwT');
                       }
-
                     });
-                    
                   }
                 },
                 child: Text(
@@ -772,7 +781,7 @@ class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
                   setState(() {
                     _imageSelected = null;
                     _image64Selected = '';
-                    foodShopnameCtrl.clear(); // .clear(); same as .text = '';
+                    foodShopnameCtrl.clear(); // .clear(); same as .text = ''
                     foodPayCtrl.text = '';
                     meal = 1;
                     foodDateCtrl.text = '';

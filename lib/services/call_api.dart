@@ -88,4 +88,35 @@ class CallAPI {
       throw Exception('Failed to call API');
     }
   }
+
+  //Method call update_diaryfood_api.php (add new diaryfood)-----------------------------------------------
+  static Future<Diaryfood> callUpdateDiaryFoodAPI(Diaryfood diaryfood) async {
+    //call to use API and then store the values received from the API in variables.
+    final responseData = await http.post(
+      Uri.parse(Env.hostName + '/mydiaryfood/apis/update_diaryfood_api.php'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(diaryfood.toJson()),
+    );
+    if (responseData.statusCode == 200) {
+      return Diaryfood.fromJson(jsonDecode(responseData.body));
+    } else {
+      throw Exception('Failed to call API');
+    }
+  }
+
+  //Method call delete_diaryfood_api.php (add new diaryfood)-----------------------------------------------
+  static Future<Diaryfood> callDeleteDiaryFoodAPI(Diaryfood diaryfood) async {
+    //call to use API and then store the values received from the API in variables.
+    final responseData = await http.post(
+      Uri.parse(Env.hostName + '/mydiaryfood/apis/delete_diaryfood_api.php'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(diaryfood.toJson()),
+    );
+    if (responseData.statusCode == 200) {
+      return Diaryfood.fromJson(jsonDecode(responseData.body));
+    } else {
+      throw Exception('Failed to call API');
+    }
+  } 
 }
+

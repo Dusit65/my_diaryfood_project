@@ -9,6 +9,7 @@ import 'package:my_diaryfood_project/models/member.dart';
 import 'package:my_diaryfood_project/services/call_api.dart';
 import 'package:my_diaryfood_project/utils/env.dart';
 import 'package:my_diaryfood_project/views/insert_diaryfood_ui.dart';
+import 'package:my_diaryfood_project/views/up_del_diaryfood_ui.dart';
 import 'package:my_diaryfood_project/views/update_profile_ui.dart';
 
 class HomeUI extends StatefulWidget {
@@ -25,13 +26,13 @@ class _HomeUIState extends State<HomeUI> {
   Future<List<Diaryfood>>? diaryfoodData;
 
 //สร้างฟังก์ชันเรียกใช้API
-  getAllDiaryFoodByMember(Diaryfood diaryfood)  {
+  getAllDiaryFoodByMember(Diaryfood diaryfood) {
     setState(() {
       diaryfoodData = CallAPI.callGetAllDiaryfoodByMemberAPI(diaryfood);
     });
   }
-  @override
 
+  @override
   void initState() {
     //สร้างตัวแปรเก็บข้อมูลที่ขะส่งไปตตอนเรียกapi
     Diaryfood diaryfood = Diaryfood(
@@ -41,6 +42,7 @@ class _HomeUIState extends State<HomeUI> {
     getAllDiaryFoodByMember(diaryfood);
     super.initState();
   }
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green[50],
@@ -56,18 +58,17 @@ class _HomeUIState extends State<HomeUI> {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () {
-            // Navigator.pop(context,);
-            if(Platform.isAndroid){
-              SystemNavigator.pop();
-            }else if(Platform.isIOS){
-              exit(0);
-            }
-            },
-            icon: Icon(
-              Icons.logout,
-            )
-          )
+              onPressed: () {
+                // Navigator.pop(context,);
+                if (Platform.isAndroid) {
+                  SystemNavigator.pop();
+                } else if (Platform.isIOS) {
+                  exit(0);
+                }
+              },
+              icon: Icon(
+                Icons.logout,
+              ))
         ],
       ),
 
@@ -82,7 +83,7 @@ class _HomeUIState extends State<HomeUI> {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: Image.network(
-              "https://cdn.pixabay.com/photo/2020/02/02/03/39/man-4811935_1280.png",
+              '${Env.hostName}/mydiaryfood/pickupload/member/${widget.member!.memImage}',
               width: MediaQuery.of(context).size.width * 0.35,
               height: MediaQuery.of(context).size.width * 0.35,
               fit: BoxFit.cover,
@@ -107,17 +108,19 @@ class _HomeUIState extends State<HomeUI> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => UpdateProfileUi(member: widget.member,),
+                  builder: (context) => UpdateProfileUi(
+                    member: widget.member,
+                  ),
                 ),
-              ).then((value){
+              ).then((value) {
                 //เอาค่าที่ส่งกลับมาหลังจากแก้ไขเสร็จมาแก้ไขให้กับwidget.member
-                if (value != null){
-                setState(() {
-                  widget.member?.memEmail = value.memEmail;
-                  widget.member?.memUsername = value.memUsername;
-                  widget.member?.memPassword = value.memPassword;
-                  widget.member?.memAge = value.memAge;
-                });
+                if (value != null) {
+                  setState(() {
+                    widget.member?.memEmail = value.memEmail;
+                    widget.member?.memUsername = value.memUsername;
+                    widget.member?.memPassword = value.memPassword;
+                    widget.member?.memAge = value.memAge;
+                  });
                 }
               });
             },
@@ -131,30 +134,48 @@ class _HomeUIState extends State<HomeUI> {
 //DiaryfoodList
           Expanded(
             child: FutureBuilder<List<Diaryfood>>(
-              future: diaryfoodData,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                    if(snapshot.data![0].message == "0"){
+                future: diaryfoodData,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    if (snapshot.data![0].message == "0") {
                       return Text("ยังไม่ได้บันทึกการกิน");
-                    }else{
+                    } else {
                       return ListView.builder(
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) {
-                          return Column(
-                            children: [
-                              ListTile(
-                                onTap: () {},
-                                tileColor: index % 2 == 0 ? Colors.red[50] : Colors.green[50],
-                                leading: ClipRRect(
-                                  child: Image.network(
-                                    '${Env.hostName}/mydiaryfood/pickupload/food/${snapshot.data![index].foodImage}',
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: [
+                                ListTile(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => UpDelDiaryfoodUI(
+                                          diaryfood: snapshot.data![index],
+                                        ),
+                                      ),
+                                    ).then((value) {
+                                      setState(() {
+                                        Diaryfood diaryfood = Diaryfood(
+                                          memId: widget.member!.memId,
+                                        );
+                                        getAllDiaryFoodByMember(diaryfood);
+                                      });
+                                    });
+                                  },
+                                  tileColor: index % 2 == 0
+                                      ? Colors.red[50]
+                                      : Colors.green[50],
+                                  leading: ClipRRect(
+                                    child: Image.network(
+                                      '${Env.hostName}/mydiaryfood/pickupload/food/${snapshot.data![index].foodImage}',
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
-                                ),
-                                title: Text(
-                                  snapshot.data![index].foodShopname!,
+                                  title: Text(
+                                    snapshot.data![index].foodShopname!,
                                   ),
                                   subtitle: Text(
                                     'วันที่บันทึก : ${snapshot.data![index].foodDate}',
@@ -164,22 +185,19 @@ class _HomeUIState extends State<HomeUI> {
                                     color: Colors.green[800],
                                   ),
                                 ),
-                              Divider(),
-                            ],
-                          );
-                        }
-                      );
+                                Divider(),
+                              ],
+                            );
+                          });
                     }
-                }else{
-                  return CircularProgressIndicator();
-                }
-              }
-            ),
+                  } else {
+                    return CircularProgressIndicator();
+                  }
+                }),
           ),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.045,
           ),
-          
         ],
       )),
       floatingActionButton: FloatingActionButton.extended(
@@ -199,7 +217,6 @@ class _HomeUIState extends State<HomeUI> {
               getAllDiaryFoodByMember(diaryfood);
             });
           });
-  
         },
         // child: Icon(
         //   Icons.add,
@@ -222,9 +239,10 @@ class _HomeUIState extends State<HomeUI> {
         ),
         backgroundColor: Colors.green[800],
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(100),),
+          borderRadius: BorderRadius.circular(100),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

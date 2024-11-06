@@ -8,8 +8,9 @@ class Member {
   String? memUsername;
   String? memPassword;
   String? memAge;
+  String? memImage;
 
-  Member({this.message, this.memId, this.memFullName, this.memEmail, this.memUsername, this.memPassword, this.memAge});
+  Member({this.message, this.memId, this.memFullName, this.memEmail, this.memUsername, this.memPassword, this.memAge, this.memImage});
 
   //Convert JSON file to App data
   Member.fromJson(Map<String, dynamic> json) {
@@ -20,6 +21,7 @@ class Member {
     memUsername = json['memUsername'];
     memPassword = json['memPassword'];
     memAge = json['memAge'];
+    memImage = json['memImage'];
   }
 
   //Convert App data to JSON file
@@ -32,6 +34,8 @@ class Member {
     data['memUsername'] = this.memUsername;
     data['memPassword'] = this.memPassword;
     data['memAge'] = this.memAge;
+    data['memImage'] = this.memImage;
+
     return data;
   }
 }
