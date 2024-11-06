@@ -1,6 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, must_be_immutable, unused_local_variable, must_call_super, annotate_overrides, sort_child_properties_last
 //test
+import 'dart:io' show Platform, exit;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:my_diaryfood_project/models/diaryfood.dart';
 import 'package:my_diaryfood_project/models/member.dart';
 import 'package:my_diaryfood_project/services/call_api.dart';
@@ -51,7 +54,23 @@ class _HomeUIState extends State<HomeUI> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: () {
+            // Navigator.pop(context,);
+            if(Platform.isAndroid){
+              SystemNavigator.pop();
+            }else if(Platform.isIOS){
+              exit(0);
+            }
+            },
+            icon: Icon(
+              Icons.logout,
+            )
+          )
+        ],
       ),
+
       body: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -168,9 +187,19 @@ class _HomeUIState extends State<HomeUI> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => InsertDiaryfoodUI(),
+              builder: (context) => InsertDiaryfoodUI(
+                memId: widget.member!.memId!,
+              ),
             ),
-          );
+          ).then((value) {
+            setState(() {
+              Diaryfood diaryfood = Diaryfood(
+                memId: widget.member!.memId,
+              );
+              getAllDiaryFoodByMember(diaryfood);
+            });
+          });
+  
         },
         // child: Icon(
         //   Icons.add,

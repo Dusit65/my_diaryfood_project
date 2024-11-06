@@ -25,7 +25,7 @@ class CallAPI {
     }
   }
 
-//Method call register_api.php (add new user member)-----------------------------------------------
+//Method call register_member_api.php (add new user member)-----------------------------------------------
   static Future<Member> callRegisterMemberAPI(Member member) async {
     //call to use API and then store the values received from the API in variables.
     final responseData = await http.post(
@@ -73,7 +73,8 @@ class CallAPI {
       throw Exception('Failed to call API');
     }
   }
-  //Method call insert_diaryfood_api.php (add new)-----------------------------------------------
+  
+//Method call insert_diaryfood_api.php (add new diaryfood)-----------------------------------------------
   static Future<Diaryfood> callInsertDiaryFoodAPI(Diaryfood diaryfood) async {
     //call to use API and then store the values received from the API in variables.
     final responseData = await http.post(

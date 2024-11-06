@@ -1,23 +1,22 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_element, unused_local_variable, no_leading_underscores_for_local_identifiers, unused_field, use_build_context_synchronously, unnecessary_import, prefer_final_fields, sort_child_properties_last
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unused_element, unused_local_variable, no_leading_underscores_for_local_identifiers, unused_field, use_build_context_synchronously, unnecessary_import, prefer_final_fields, sort_child_properties_last, unrelated_type_equality_checks, unnecessary_null_comparison, prefer_is_empty, prefer_interpolation_to_compose_strings, must_be_immutable
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
-
-
-
+import 'package:my_diaryfood_project/models/diaryfood.dart';
+import 'package:my_diaryfood_project/services/call_api.dart';
 
 class InsertDiaryfoodUI extends StatefulWidget {
-  const InsertDiaryfoodUI({super.key});
-
+  String memId;
+  InsertDiaryfoodUI({super.key, required this.memId});
   @override
   State<InsertDiaryfoodUI> createState() => _InsertDiaryfoodUIState();
 }
 
 class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
 //======================================================================================================
-//Variable/Method group
+//-------------------------------Variable-------------------------------------------------
 
 //Textfield Controller
 //image variable
@@ -30,14 +29,15 @@ class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
   String _image64Selected = '';
 
 //variable meal
-  int? meal;
+  int? meal = 1;
 
 //variable date
   String? _foodDateSelected;
 
-//varable province
-  String? _foodProvinceSelected;
+//variable province
+  String? _foodProvinceSelected = 'กรุงเทพมหานคร';
 
+//--------------------------------------------------------------------------------------
 //ประกาศ/สร้างตัวแปรเพื่อเก็บข้อมูลรายการที่จะเอาไปใช้กับ DropdownButton
   List<DropdownMenuItem<String>> provinceItems = [
     'กรุงเทพมหานคร',
@@ -138,18 +138,19 @@ class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
       _foodLng = position.longitude.toString();
     });
   }
+
   Future<Position> _determinePosition() async {
     LocationPermission permission;
- 
+
     permission = await Geolocator.checkPermission();
- 
+
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         return Future.error('Location Permissions are denied');
       }
     }
- 
+
     return await Geolocator.getCurrentPosition();
   }
 
@@ -183,7 +184,7 @@ class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
     }
   }
 
-//Method open calendar
+//----------------------Method open calendar------------------------
   Future<void> _openCalendar() async {
     final DateTime? _picker = await showDatePicker(
       context: context,
@@ -245,8 +246,77 @@ class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
         month = 'ธันวาคม';
     }
 
-    return day + ' ' + month + ' พ.ศ. ' + year;
+    return int.parse(day).toString() + ' ' + month + ' ' + year;
   }
+//-------------------------------------------------------------------
+
+//-------------------------------Show Dialog ------------------------
+//Method showWaringDialog
+  showWaringDialog(context, msg) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Align(
+          alignment: Alignment.center,
+          child: Text(
+            'คำเตือน',
+          ),
+        ),
+        content: Text(
+          msg,
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'ตกลง',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+//Method showCompleteDialog
+  Future showCompleteDialog(context, msg) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Align(
+          alignment: Alignment.center,
+          child: Text(
+            'ผลการทำงาน',
+          ),
+        ),
+        content: Text(
+          msg,
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'ตกลง',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+//-------------------------------------------------------------------
 
 //======================================================================================================
   @override
@@ -430,6 +500,7 @@ class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
                   top: MediaQuery.of(context).size.height * 0.015,
                 ),
                 child: TextField(
+                  keyboardType: TextInputType.number,
                   controller: foodPayCtrl,
                   decoration: InputDecoration(
                     hintText: 'ป้อนค่าใช้จ่าย',
@@ -642,7 +713,43 @@ class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
 //save button
               ElevatedButton(
                 onPressed: () {
-                
+                  //Validate
+                  if (_image64Selected == '' || _image64Selected == null) {
+                    showWaringDialog(context, 'กรุณาถ่ายภาพ/เลือกรูปภาพด้วย');
+                  } else if (foodShopnameCtrl.text.trim().length == '') {
+                    showWaringDialog(context, 'กรุณาป้อนชื่อร้านอาหารด้วย');
+                  } else if (foodPayCtrl.text.trim().length == 0) {
+                    showWaringDialog(context, 'กรุณาป้อนค่าใช้จ่ายด้วย');
+                  } else if (_foodDateSelected == '' ||
+                      _foodDateSelected == null) {
+                    showWaringDialog(context, 'กรุณาป้อนวันที่กินด้วย');
+                  } else {
+                    //ส่งข้อมูลที่ผู้ใช้ป้อน/เลือกไปให้ API เพื่อบันทึกการกินลงฐานข้อมูล
+                    //แพ็กข้อมูลที่จะส่งรวมกัน
+                    Diaryfood diaryfood = Diaryfood(
+                        foodShopname: foodShopnameCtrl.text.trim(),
+                        foodMeal: meal.toString(),
+                        foodImage: _image64Selected,
+                        foodPay: foodPayCtrl.text.trim(),
+                        foodDate: foodDateCtrl.text.trim(),
+                        foodProvince: _foodProvinceSelected,
+                        foodLat: _foodLat,
+                        foodLng: _foodLng,
+                        memId: widget.memId,
+                      );
+                    //ส่งข้อมูลที่แพ็กไว้ไปให้ API เพื่อบันทึกการกินลงฐานข้อมูล
+                    //call api
+                    CallAPI.callInsertDiaryFoodAPI(diaryfood).then((value) {
+                      //ถ้าส่งข้อมูลสําเร็จ
+                      if (value != null) {
+                        showCompleteDialog(context, 'บันทึกการกินสําเร็จOvO');
+                      }else{
+                        showWaringDialog(context, 'บันทึกการกินไม่สําเร็จ โปรดลองใหม่อีกครั้งTwT');
+                      }
+
+                    });
+                    
+                  }
                 },
                 child: Text(
                   'บันทึกการกิน',
@@ -659,9 +766,21 @@ class _InsertDiaryfoodUIState extends State<InsertDiaryfoodUI> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.02,
               ),
-//cancel button              
+//cancel button
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  setState(() {
+                    _imageSelected = null;
+                    _image64Selected = '';
+                    foodShopnameCtrl.clear(); // .clear(); same as .text = '';
+                    foodPayCtrl.text = '';
+                    meal = 1;
+                    foodDateCtrl.text = '';
+                    _foodProvinceSelected = 'กรุงเทพมหานคร';
+                    _foodLat = '';
+                    _foodLng = '';
+                  });
+                },
                 child: Text(
                   'ยกเลิก',
                   style: TextStyle(),
