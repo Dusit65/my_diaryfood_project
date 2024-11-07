@@ -739,7 +739,7 @@ class _UpDelDiaryfoodUIState extends State<UpDelDiaryfoodUI> {
                     //Packing data
                     Diaryfood diaryfood;
                     if (_imageSelected == null) {
-                      //in case not update image
+                      //in case not update image => Don't add "foodImage: _image64Selected,"
                       diaryfood = Diaryfood(
                         foodId: widget.diaryfood!.foodId,
                         foodShopname: foodShopnameCtrl.text.trim(),
@@ -752,9 +752,10 @@ class _UpDelDiaryfoodUIState extends State<UpDelDiaryfoodUI> {
                         memId: widget.diaryfood!.memId,
                       );
                     } else {
+                      //in case update image
                       diaryfood = Diaryfood(
                         foodId: widget.diaryfood!.foodId,
-                        foodImage: _image64Selected,
+                        foodImage: _image64Selected, // add foodImage
                         foodShopname: foodShopnameCtrl.text.trim(),
                         foodPay: foodPayCtrl.text.trim(),
                         foodMeal: meal.toString(),
